@@ -33,6 +33,18 @@
           background-size: cover;
           background-position: 50% 50%;
         }
+
+		div.more {
+		    display:none;
+		}
+		
+		a.readmorebtn {
+		    cursor:pointer;
+		}
+
+		a.readmorebtn:hover {
+		    border-bottom:1px black solid;
+		}
     </style>
 
 </head>
@@ -107,7 +119,7 @@
         	<div class="container">
 		        <div class="col-lg-8 col-lg-offset-2">
 		            <h2>About Me</h2>
-		            <p><img class="img-circle" src="img/ae.jpg" width="100"></p>
+		            <p><img class="img-circle" src="img/ae.png" width="250"></p>
 		            <p>I've been lecturing at the <a href="http://www.iadt.ie">Institute of Art, Design &amp; Technology (IADT)</a>, Dun Laoghaire since 2007. Prior to that I completed a BSc (Hons) in Computer Applications [Computer Science] in Dublin City University (DCU), followed by a PhD focusing on Speech Signal Processing, also in DCU.</p>
 		        </div>
       		</div>
@@ -138,39 +150,45 @@
     <section id="research" class="content-section-alt text-center">
         <div class="research-section">
             <div class="container">
-                <div class="col-lg-8 col-lg-offset-2">
+                <div class="col-lg-8 col-lg-offset-2" >
                     <h2>Research</h2>
                     <p>My research interests include signal processing, machine learning, and human-computer interaction. I am particularly interested in a range of spoken language technologies, including: speech recognition, speech synthesis, speech enhancement, and voice conversion.</p>
                     <section id="publications">
                     <h3>Publications</h3>
-
-                    <p>A.&nbsp;Errity, "Human-Computer Interaction," in <em>An Introduction to Cyberpsychology</em>, I.&nbsp;Connolly, M.&nbsp;Palmer, H.&nbsp;Barton, and G.&nbsp;Kirwan, Eds., Routledge, 2016.
-                    </p>
-                    <br>
-                    <p>
-                    A.&nbsp;Errity, B.&nbsp;Rooney, and C.&nbsp;Tunney, "Gaming," in <em>An Introduction to Cyberpsychology</em>, I.&nbsp;Connolly, M.&nbsp;Palmer, H.&nbsp;Barton, and G.&nbsp;Kirwan, Eds., Routledge, 2016.
-                    </p>
-                    <br>
-                    <p>A.&nbsp;Errity, "<a href="http://doras.dcu.ie/15142/">Exploring the dimensionality of speech using manifold learning and dimensionality reduction methods</a>," Ph.D. thesis, Dublin City University, 2010.</p>
-                    <br>
-                    <p>
-					A.&nbsp;Errity and J.&nbsp;McKenna, "A comparison of linear and nonlinear dimensionality reduction methods applied to synthetic speech," in <em>Proc. of  Interspeech 2009 - Eurospeech</em>, Brighton, UK, September 2009, pp. 1095-1098.</p>
-					<br>
-					<p>A.&nbsp;Errity, J.&nbsp;McKenna, and B.&nbsp;Kirkpatrick, "Manifold learning-based feature transformation for phone classification," in <em>Advances in Nonlinear Speech Processing, International Conference on Non-Linear Speech Processing, NOLISP 2007, Paris, France, May 22-25, 2007, Revised Selected Papers</em>, ser. Lecture Notes in Computer Science, M.&nbsp;Chetouani, A.&nbsp;Hussain, B.&nbsp;Gas, M.&nbsp;Milgram, and J.-L. Zarader, Eds., vol. 4885.  Springer, 2007, pp. 132-141.</p>
-					<br>
-					<p>A.&nbsp;Errity, J.&nbsp;McKenna, and B.&nbsp;Kirkpatrick, "Dimensionality reduction methods applied to both magnitude and phase derived features," in <em>Proc. of Interspeech 2007 - Eurospeech</em>, Antwerp, Belgium, August 2007, pp. 1957-1960.</p>
-					<br>
-					<p>B.&nbsp;Kirkpatrick, D.&nbsp;O'Brien, R.&nbsp;Scaife, and A.&nbsp;Errity, "On the role of spectral dynamics in unit selection speech synthesis," in <em>Proc. of Interspeech 2007 - Eurospeech</em>, Antwerp, Belgium, August 2007, pp. 2889-2892.</p>
-					<br>
-					<p>A.&nbsp;Errity and J.&nbsp;McKenna, "A comparative study of linear and nonlinear dimensionality reduction for speaker identification," in <em>Proc. of the 15th Int. Conf. on Digital Signal Processing (DSP)</em>, Cardiff, Wales, July 2007, pp. 587-590.</p>
-					<br>
-					<p>B.&nbsp;Kirkpatrick, D.&nbsp;O'Brien, R.&nbsp;Scaife, and A.&nbsp;Errity, "Spectral dynamics as a source of discontinuity in concatenative speech synthesis," in <em>Proc. of the 15th Int. Conf. on Digital Signal Processing (DSP)</em>, Cardiff, Wales, July 2007, pp. 615-618.</p>
-					<br>
-					<p>A.&nbsp;Errity, J.&nbsp;McKenna, and B.&nbsp;Kirkpatrick, "Manifold learning-based feature transformation for phone classification," in <em>Proc. of the ISCA Tutorial and Research Workshop on Nonlinear Speech Processing (NOLISP)</em>, Paris, France, May 2007, pp. 43-46.</p>
-					<br>
-					<p>A.&nbsp;Errity and J.&nbsp;McKenna, "An investigation of manifold learning for speech analysis," in <em>Proc. of the Int. Conf. on Spoken Language Processing (Interspeech 2006 - ICSLP)</em>, Pittsburgh PA, USA, September 2006, pp. 2506-2509.</p> 
-					<br>
-					<p>A.&nbsp;Errity, J.&nbsp;McKenna, and S.&nbsp;Isard, "Unscented Kalman filtering of line spectral frequencies," in <em>Proc. of the Int. Conf. on Spoken Language Processing (Interspeech 2004 - ICSLP)</em>, Jeju, Korea, October 2004, pp. 2697-2700.</p>
+					<div style="border-bottom: 6px solid #ccc; margin:2.4em 0;">
+	                    <p>A.&nbsp;Errity, "Human-Computer Interaction," in <em>An Introduction to Cyberpsychology</em>, I.&nbsp;Connolly, M.&nbsp;Palmer, H.&nbsp;Barton, and G.&nbsp;Kirwan, Eds., Routledge, 2016.
+	                    </p>
+	                    <br>
+	                    <p>
+	                    A.&nbsp;Errity, B.&nbsp;Rooney, and C.&nbsp;Tunney, "Gaming," in <em>An Introduction to Cyberpsychology</em>, I.&nbsp;Connolly, M.&nbsp;Palmer, H.&nbsp;Barton, and G.&nbsp;Kirwan, Eds., Routledge, 2016.
+	                    </p>
+	                    <br>
+	                    <p>A.&nbsp;Errity, "<a href="http://doras.dcu.ie/15142/">Exploring the dimensionality of speech using manifold learning and dimensionality reduction methods</a>," Ph.D. thesis, Dublin City University, 2010.</p>
+	                    <br>
+	                    <p>
+						A.&nbsp;Errity and J.&nbsp;McKenna, "A comparison of linear and nonlinear dimensionality reduction methods applied to synthetic speech," in <em>Proc. of  Interspeech 2009 - Eurospeech</em>, Brighton, UK, September 2009, pp. 1095-1098.</p>
+						<br>
+						
+						<div class="more">
+							<p>A.&nbsp;Errity, J.&nbsp;McKenna, and B.&nbsp;Kirkpatrick, "Manifold learning-based feature transformation for phone classification," in <em>Advances in Nonlinear Speech Processing, International Conference on Non-Linear Speech Processing, NOLISP 2007, Paris, France, May 22-25, 2007, Revised Selected Papers</em>, ser. Lecture Notes in Computer Science, M.&nbsp;Chetouani, A.&nbsp;Hussain, B.&nbsp;Gas, M.&nbsp;Milgram, and J.-L. Zarader, Eds., vol. 4885.  Springer, 2007, pp. 132-141.</p>
+							<br>
+							<p>A.&nbsp;Errity, J.&nbsp;McKenna, and B.&nbsp;Kirkpatrick, "Dimensionality reduction methods applied to both magnitude and phase derived features," in <em>Proc. of Interspeech 2007 - Eurospeech</em>, Antwerp, Belgium, August 2007, pp. 1957-1960.</p>
+							<br>
+							<p>B.&nbsp;Kirkpatrick, D.&nbsp;O'Brien, R.&nbsp;Scaife, and A.&nbsp;Errity, "On the role of spectral dynamics in unit selection speech synthesis," in <em>Proc. of Interspeech 2007 - Eurospeech</em>, Antwerp, Belgium, August 2007, pp. 2889-2892.</p>
+							<br>
+							<p>A.&nbsp;Errity and J.&nbsp;McKenna, "A comparative study of linear and nonlinear dimensionality reduction for speaker identification," in <em>Proc. of the 15th Int. Conf. on Digital Signal Processing (DSP)</em>, Cardiff, Wales, July 2007, pp. 587-590.</p>
+							<br>
+							<p>B.&nbsp;Kirkpatrick, D.&nbsp;O'Brien, R.&nbsp;Scaife, and A.&nbsp;Errity, "Spectral dynamics as a source of discontinuity in concatenative speech synthesis," in <em>Proc. of the 15th Int. Conf. on Digital Signal Processing (DSP)</em>, Cardiff, Wales, July 2007, pp. 615-618.</p>
+							<br>
+							<p>A.&nbsp;Errity, J.&nbsp;McKenna, and B.&nbsp;Kirkpatrick, "Manifold learning-based feature transformation for phone classification," in <em>Proc. of the ISCA Tutorial and Research Workshop on Nonlinear Speech Processing (NOLISP)</em>, Paris, France, May 2007, pp. 43-46.</p>
+							<br>
+							<p>A.&nbsp;Errity and J.&nbsp;McKenna, "An investigation of manifold learning for speech analysis," in <em>Proc. of the Int. Conf. on Spoken Language Processing (Interspeech 2006 - ICSLP)</em>, Pittsburgh PA, USA, September 2006, pp. 2506-2509.</p> 
+							<br>
+							<p>A.&nbsp;Errity, J.&nbsp;McKenna, and S.&nbsp;Isard, "Unscented Kalman filtering of line spectral frequencies," in <em>Proc. of the Int. Conf. on Spoken Language Processing (Interspeech 2004 - ICSLP)</em>, Jeju, Korea, October 2004, pp. 2697-2700.</p>
+							<br>
+						</div>
+						<a class="readmorebtn">See more</a>
+					</div>
                     </section>
                     <section id="prisoner">
                     <h3>Prisoner's Dilemma</h3>
@@ -258,6 +276,17 @@
     <script src="js/particles.min.js"></script>
     <!-- Particle.js config -->
     <script src="js/particles-app.js"></script>
+
+    <script>
+	    var moreText = "See more",
+	    lessText = "See less",
+	    moreButton = $("a.readmorebtn");
+
+		moreButton.click(function () {
+		    var $this = $(this);
+		    $this.text($this.text() == moreText ? lessText : moreText).prev("div.more").slideToggle("slow");
+		});
+	</script>
 
     <!-- Google Analytics -->
     <script>
