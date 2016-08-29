@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Republic of Ireland - Cartogram with d3 &amp; TopoJSON</title>
+    <meta charset="utf-8">
+    <meta property="og:image" content="placeholder.png">
+    <script src="lib/d3.v2.min.js"></script>
+    <script src="lib/colorbrewer.js"></script>
+    <script src="lib/topojson.js"></script>
+    <script src="cartogram.js"></script>
+    <style type="text/css">
+
+      body {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 14px;
+        line-height: 1.4em;
+        padding: 0;
+        margin: 0;
+      }
+
+      #container {
+        width: 960px;
+        margin: 20px auto;
+      }
+
+      h1 {
+        font-size: 200%;
+        margin: 0 0 15px 0;
+      }
+
+      h2 {
+        font-size: 160%;
+        margin: 0 0 10px 0;
+      }
+
+      p {
+        margin: 0 0 10px;
+      }
+
+      form, form > * {
+        margin: 0;
+      }
+
+      #status {
+        color: #999;
+      }
+
+      #map-container {
+        height: 400px;
+        text-align: center;
+        position: relative;
+        margin: 20px 0;
+      }
+
+      #map {
+        display: block;
+        position: absolute;
+        background: #fff;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+      }
+
+      path.county {
+        stroke: #666;
+        stroke-width: .5;
+      }
+
+      path.county:hover {
+        stroke: #000;
+      }
+
+      form {
+        font-size: 120%;
+      }
+
+      select {
+        font-size: inherit;
+      }
+
+      #placeholder {
+        position: absolute;
+        z-index: -1;
+        display: block;
+        left: 0;
+        top: 0;
+      }
+
+      .axis text {
+        font: 10px sans-serif;
+      }
+
+      .axis path,
+      .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+      }
+
+      .bar {
+        fill: steelblue;
+        fill-opacity: .9;
+      }
+
+      .x.axis path {
+        display: none;
+      }
+
+      #bar-container {
+        height: 200px;
+        text-align: center;
+        position: relative;
+        margin: 20px 0;
+      }
+
+      #bar {
+        display: block;
+        position: absolute;
+        background: #fff;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+      }
+
+    </style>
+  </head>
+  <body>
+    <div id="container">
+      <h1>Republic of Ireland - Data Explorer</h1>
+      <form>
+        <p>
+          <label>Scale by <select id="field"></select></label>
+          <label>in <select id="year"></select></label>
+          <span id="status"></span>
+        </p>
+      </form>
+      <div id="map-container">
+        <svg id="map"></svg>
+      </div>
+      <div id="bar-container">
+        <label><input type="checkbox" id="check"> Sort values</label>
+        <svg id="bar"></svg>
+      </div>
+      <div id="about" style="text-align: left">
+        <h2>About</h2>
+        <p>This prototype data visualisation allows you to explore a number of data sets related to the counties of the Republic of Ireland using both a cartogram and sortable bar chart. The cartogram is an adaptation of <a href="http://stamen.com/studio/shawn">Shawn Allen's</a> <a href="http://prag.ma/code/d3-cartogram/">example</a>. The sortable bar chart is based on <a href="http://bl.ocks.org/3885705">this example</a>.</p>
+
+        <p>Technologies used include <a href="http://d3js.org">d3.js</a>, <a href="http://github.com/mbostock/topojson">TopoJSON</a>, and <a href="cartogram.js">cartogram.js</a>; colors by <a href="http://colorbrewer2.org">colorbrewer</a>.</p>
+        <p>Data sources include: <a href="http://www.cso.ie">Central Statistics Office</a>; <a href="http://www.rsa.ie/en/RSA/Road-Safety/Our-Research/">Road Safety Authority</a>; Wikipedia entries for the <a href="http://en.wikipedia.org/wiki/All-Ireland_Senior_Football_Championship">All-Ireland Senior Football Championship</a> and <a href="http://en.wikipedia.org/wiki/All-Ireland_Senior_Hurling_Championship">All-Ireland Senior Hurling Championship</a>.
+        </p>
+        <p>Developed by <a href="http://www.twitter.com/aerrity">Andrew Errity</a>. Code available on <a href="https://github.com/aerrity/d3-cartogram">GitHub</a>.</p>
+      </div>
+    </div>
+    <script>
+
+      // hide the form if the browser doesn't do SVG,
+      // (then just let everything else fail)
+      if (!document.createElementNS) {
+        document.getElementsByTagName("form")[0].style.display = "none";
+      }
+
+        window.onhashchange = function() {
+          parseHash();
+
+        };
+
+        var percent = (function() {
+              var fmt = d3.format(".2f");
+              return function(n) { return fmt(n) + "%"; };
+            })(),
+            fields = [
+              {name: "(no scale)", id: "none"},
+              {name: "Census Population", id: "censuspop", key: "CENSUS%dPOP", years: [2011]},
+              {name: "Births", id: "births", key: "BIRTHS%d"},
+              {name: "Road Traffic Accidents", id: "rta", key: "RTA%d", years: [2010]},
+              {name: "All-Ireland Senior Hurling Championships", id: "hurling", key: "HURLINGWINS", years:[]},
+              {name: "All-Ireland Senior Football Championships", id: "football", key: "FOOTBALLWINS", years:[]}
+            ],
+            years = [2010, 2011],
+            fieldsById = d3.nest()
+              .key(function(d) { return d.id; })
+              .rollup(function(d) { return d[0]; })
+              .map(fields),
+            field = fields[0],
+            year = years[0],
+            colors = colorbrewer.RdYlBu[3]
+              .reverse()
+              .map(function(rgb) { return d3.hsl(rgb); });
+
+        var body = d3.select("body"),
+            stat = d3.select("#status");
+
+        var fieldSelect = d3.select("#field")
+          .on("change", function(e) {
+            field = fields[this.selectedIndex];
+            location.hash = "#" + [field.id, year].join("/");
+          });
+
+        fieldSelect.selectAll("option")
+          .data(fields)
+          .enter()
+          .append("option")
+            .attr("value", function(d) { return d.id; })
+            .text(function(d) { return d.name; });
+
+        var yearSelect = d3.select("#year")
+          .on("change", function(e) {
+            year = years[this.selectedIndex];
+            location.hash = "#" + [field.id, year].join("/");
+          });
+
+        yearSelect.selectAll("option")
+          .data(years)
+          .enter()
+          .append("option")
+            .attr("value", function(y) { return y; })
+            .text(function(y) { return y; });
+
+
+        var map = d3.select("#map");
+
+        var proj = d3.geo.albers()
+            .origin([-7.9,53.3])
+            .scale(5500)
+            .translate([490,210]);
+        var path = d3.geo.path().projection(proj);
+
+        var    layer = map.append("g")
+              .attr("id", "layer"),
+            counties = layer.append("g")
+              .attr("id", "counties")
+              .selectAll("path");
+
+
+        var topology,
+            geometries,
+            rawData,
+            dataById = {},
+            carto = d3.cartogram()
+              .projection(proj)
+              .properties(function(d) {
+                return dataById[d.id];
+              })
+              .value(function(d) {
+                return +d.properties[field];
+              });
+
+        /*
+        ********Bar chart setup*********
+        */
+        var margin = {top: 10, right: 20, bottom: 70, left: 80},
+              width = 960 - margin.left - margin.right,
+              height = 200 - margin.top - margin.bottom;
+
+        var formatPercent = d3.format("");
+
+        var x = d3.scale.ordinal()
+                .rangeRoundBands([0, width], .1, 1);
+
+        var y = d3.scale.linear()
+
+            .range([height, 0]);
+
+        var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient("bottom");
+
+        var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left")
+            .tickFormat(formatPercent);
+
+        var svg = d3.select("#bar").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+          .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        /*END OF BAR CHART SETUP*/
+
+
+
+        var segmentized = location.search === "?segmentized",
+            url = ["data",
+              segmentized ? "ireland-segmentized.topojson" : "ireland.topojson"
+            ].join("/");
+        d3.json(url, function(topo) {
+          topology = topo;
+          geometries = topology.objects.counties.geometries;
+          d3.csv("data/data.csv", function(data) {
+            rawData = data;
+
+            dataById = d3.nest()
+              .key(function(d) { return d.NAME; })
+              .rollup(function(d) { return d[0]; })
+              .map(data);
+            initBar(data);
+            init();
+
+          });
+        });
+
+        function init() {
+          var features = carto.features(topology, geometries),
+              path = d3.geo.path()
+                .projection(proj);
+
+          counties = counties.data(features)
+            .enter()
+            .append("path")
+              .attr("class", "county")
+              .attr("id", function(d) {
+                return d.properties.NAME;
+              })
+              .attr("fill", "#fafafa")
+              .attr("d", path);
+
+          counties.append("title");
+
+          parseHash();
+        }
+
+        function reset() {
+          stat.text("");
+          body.classed("updating", false);
+
+          var features = carto.features(topology, geometries),
+              path = d3.geo.path()
+                .projection(proj);
+
+          counties.data(features)
+            .transition()
+              .duration(750)
+              .ease("linear")
+              .attr("fill", "#fafafa")
+              .attr("d", path);
+
+          counties.select("title")
+            .text(function(d) {
+              return d.properties.NAME;
+            });
+
+        }
+
+        function update() {
+          var start = Date.now();
+          body.classed("updating", true);
+
+          var key = field.key.replace("%d", year),
+              fmt = (typeof field.format === "function")
+                ? field.format
+                : d3.format(field.format || ","),
+              value = function(d) {
+                return +d.properties[key];
+              },
+              values = counties.data()
+                .map(value)
+                .filter(function(n) {
+                  return !isNaN(n);
+                })
+                .sort(d3.ascending),
+              lo = values[0],
+              hi = values[values.length - 1];
+
+          var color = d3.scale.linear()
+            .range(colors)
+            .domain(lo < 0
+              ? [lo, 0, hi]
+              : [lo, d3.mean(values), hi]);
+
+          // normalize the scale to positive numbers
+          var scale = d3.scale.linear()
+            .domain([lo, hi])
+            // was range([1, 1000])
+            .range([1, 100]);
+
+          // tell the cartogram to use the scaled values
+          carto.value(function(d) {
+            return scale(value(d));
+          });
+
+          // generate the new features, pre-projected
+          var features = carto(topology, geometries).features;
+
+          // update the data
+          counties.data(features)
+            .select("title")
+              .text(function(d) {
+                return [d.properties.NAME, fmt(value(d))].join(": ");
+              });
+
+          counties.transition()
+            .duration(750)
+            .ease("linear")
+            .attr("fill", function(d) {
+              return color(value(d));
+            })
+            .attr("d", carto.path);
+
+          var delta = (Date.now() - start) / 1000;
+          stat.text(["calculated in", delta.toFixed(1), "seconds"].join(" "));
+          body.classed("updating", false);
+        }
+
+        var deferredUpdate = (function() {
+          var timeout;
+          return function() {
+            var args = arguments;
+            clearTimeout(timeout);
+            stat.text("calculating...");
+            return timeout = setTimeout(function() {
+              update.apply(null, arguments);
+            }, 10);
+          };
+        })();
+
+        var hashish = d3.selectAll("a.hashish")
+          .datum(function() {
+            return this.href;
+          });
+
+        function parseHash() {
+          var parts = location.hash.substr(1).split("/"),
+              desiredFieldId = parts[0],
+              desiredYear = +parts[1];
+
+          field = fieldsById[desiredFieldId] || fields[0];
+          year = (years.indexOf(desiredYear) > -1) ? desiredYear : years[0];
+
+
+          fieldSelect.property("selectedIndex", fields.indexOf(field));
+
+          if (field.id === "none") {
+
+            yearSelect.attr("disabled", "disabled");
+            reset();
+            resetBar();
+
+          } else {
+
+            if (field.years) {
+              if (field.years.indexOf(year) === -1) {
+                year = field.years[0];
+              }
+              yearSelect.selectAll("option")
+                .attr("disabled", function(y) {
+                  return (field.years.indexOf(y) === -1) ? "disabled" : null;
+                });
+            } else {
+              yearSelect.selectAll("option")
+                .attr("disabled", null);
+            }
+
+            yearSelect
+              .property("selectedIndex", years.indexOf(year))
+              .attr("disabled", null);
+
+            deferredUpdate();
+            changeY(field.key.replace("%d", year));
+            location.replace("#" + [field.id, year].join("/"));
+
+
+            hashish.attr("href", function(href) {
+              return href + location.hash;
+            });
+          }
+        }
+
+
+
+
+        function initBar(data){
+
+            data.forEach(function(d) {
+                d.RTA2010 = +d.RTA2010;
+                d.FOOTBALLWINS = + d.FOOTBALLWINS;
+                d.HURLINGWINS = + d.HURLINGWINS;
+                d.BIRTHS2010 = + d.BIRTHS2010;
+                d.BIRTHS2011 = + d.BIRTHS2011;
+                d.CENSUS2011POP = + d.CENSUS2011POP;
+              });
+
+
+            x.domain(data.map(function(d) { return d.NAME; }));
+            y.domain([0, 0]);
+
+
+            svg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(xAxis);
+
+            svg.selectAll("text")
+                .style("text-anchor","end")
+                .attr("transform", function(d) { return "translate(" + -13 + ", " + 10 + ") rotate("+270+")" });
+
+            svg.append("g")
+                .attr("class", "y axis")
+                .call(yAxis)
+              .append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 6)
+                .attr("dy", ".71em")
+                .attr("class","y label")
+                .style("text-anchor", "end")
+                .text("");
+
+            svg.selectAll(".bar")
+                .data(data)
+              .enter().append("rect")
+                .attr("class", "bar")
+                .attr("x", function(d) { return x(d.NAME); })
+                .attr("width", x.rangeBand())
+                .attr("y", function(d) { return y(0); })
+                .attr("height", function(d) { return height - y(0); });
+
+            d3.select("input").on("change", sortX);
+
+
+
+        /*
+          var sortTimeout = setTimeout(function() {
+            d3.select("input").property("checked", true).each(change);
+          }, 2000);
+        */
+
+        }
+          function sortX() {
+            //clearTimeout(sortTimeout);
+
+            var colName = field.key.replace("%d", year);
+            var data = [];
+            svg.selectAll(".bar").each(function(d){data.push(d);});
+            // Copy-on-write since tweens are evaluated after a delay.
+
+            var x0 = x.domain(data.sort(document.getElementById('check').checked
+                ? function(a, b) { return b[colName] - a[colName]; }
+                : function(a, b) { return d3.ascending(a.NAME, b.NAME); })
+                .map(function(d) { return d.NAME; }))
+                .copy();
+
+            var transition = svg.transition().duration(750),
+                delay = function(d, i) { return i * 50; };
+
+            transition.selectAll(".bar")
+                .delay(delay)
+                .attr("x", function(d) { return x0(d.NAME); });
+
+            transition.select(".x.axis")
+                .call(xAxis)
+              .selectAll("g")
+                .delay(delay);
+
+            transition.select(".x.axis").selectAll("text")
+              .style("text-anchor","end")
+              .attr("transform", function(d) { return "translate(" + -13 + ", " + 10 + ") rotate("+270+")" });
+          }
+
+          function changeY(colNames) {
+
+            var data = [];
+            svg.selectAll(".bar").each(function(d){data.push(d);});
+
+
+            // Copy-on-write since tweens are evaluated after a delay.
+            var y0 =  y.domain([0, d3.max(data, function(d) {return d[colNames]; })])
+                .copy();
+
+            var transition = svg.transition().duration(750),
+                delay = function(d, i) { return i * 50; };
+
+            transition.selectAll(".bar")
+                .delay(delay)
+                .attr("y", function(d) { return y0(d[colNames]); })
+                .attr("height", function(d) { return height - y0(d[colNames])}).each("end", sortX);
+
+            transition.select(".y.axis")
+                .call(yAxis)
+              .selectAll("g")
+                .delay(delay)
+                ;
+
+             transition.select(".y.label")
+               .style("text-anchor", "end")
+              .text(colNames);
+
+          }
+
+
+          function resetBar() {
+
+
+            // Copy-on-write since tweens are evaluated after a delay.
+            var y0 =  y.domain([0, 0])
+                .copy();
+
+            var transition = svg.transition().duration(750),
+                delay = function(d, i) { return i * 50; };
+
+            transition.selectAll(".bar")
+                .delay(delay)
+                .attr("y", function(d) { return y0(0); })
+                .attr("height", function(d) { return height - y0(0)});
+
+            transition.select(".y.axis")
+                .call(yAxis)
+              .selectAll("g")
+                .delay(delay)
+                ;
+
+             transition.select(".y.label")
+               .style("text-anchor", "end")
+              .text("");
+
+          }
+
+
+
+    </script>
+  </body>
+</html>
