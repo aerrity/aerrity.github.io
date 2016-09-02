@@ -340,8 +340,41 @@
             {
                 $('#vehicleSelect').append('<option value=' + value.id + '>' + value.id + ' - ' + value.name + '</option>');
                 vehiclesArr.push(value.id);
-            });   
+            });
+
+            //Get data passed via URL
+            var id = getQueryVariable("id");
+            var to = getQueryVariable("to");
+            var from = getQueryVariable("from");
+            //If data has been passed by URL populate the inputs and draw the graphs
+            if(id && to && from){
+                console.log(id);
+                console.log(from);
+                console.log(to);
+                var drp = $('#datePicker').data('daterangepicker');
+              
+                drp.setStartDate(moment( from ));
+                drp.setEndDate(moment( to ));
+                document.getElementById('vehicleSelect').value =id+'';;
+                updateGraphs();
+                
+            }   
         });
+    </script>
+
+    <script type="text/javascript">
+        //get variables passed via URL
+        function getQueryVariable(variable)
+        {
+               var query = window.location.search.substring(1);
+               var vars = query.split("&");
+               for (var i=0;i<vars.length;i++) {
+                       var pair = vars[i].split("=");
+                       if(pair[0] == variable){return pair[1];}
+               }
+               return(null);
+        }
+
     </script>
 
    <!-- Get driver behaviour data -->
@@ -448,7 +481,7 @@
 
             var url = 'https://www.track.kabzy.com/api/rawdata?vehicles=' + vehicleId + '&fields=$basic,ac,count:1&from=' + from + 'T00:00:00&to=' + to + 'T23:59:59&codes=48,47,40,39&resample=event_time&group_by=vid,code&how=count:sum&freq=31D';
 
-            var url2 = 'https://www.track.kabzy.com/api/rawdata?async=1&fields=$basic,ac,count:1&from=' + from + 'T00:00:00&to=' + to + 'T23:59:59&codes=48,47,40,39&resample=event_time&group_by=vid,code&how=count:sum&freq=31D';
+            //var url2 = 'https://www.track.kabzy.com/api/rawdata?async=1&fields=$basic,ac,count:1&from=' + from + 'T00:00:00&to=' + to + 'T23:59:59&codes=48,47,40,39&resample=event_time&group_by=vid,code&how=count:sum&freq=31D';
             
             
 
@@ -468,12 +501,14 @@
                     else if(value.code == 39){
                         harshB += value.count;                        
                     }
+                    //Remove harsh cornerning and lane changes - not in the current mobile app
+                    /*
                     else if(value.code == 47){
                         aggLane += value.count;                       
                     }
                     else if(value.code == 48){
                         harshC += value.count;
-                    }
+                    }*/
                 }); 
 
                 //console.log('HA: ' + harshA);

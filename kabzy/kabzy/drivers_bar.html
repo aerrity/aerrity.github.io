@@ -23,10 +23,7 @@
     <!-- Custom CSS -->
     <link href="../dist/css/sb-admin-2.css" rel="stylesheet">
 
-    <!-- Morris Charts CSS -->
-    <link href="../bower_components/morrisjs/morris.css" rel="stylesheet">
-
-    <!-- Custom Fonts -->
+       <!-- Custom Fonts -->
     <link href="../bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
     <!-- Date range picker CSS -->
@@ -41,7 +38,8 @@
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
 
-    
+    <!-- D3 -->
+    <script src="http://d3js.org/d3.v3.min.js"></script>
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -52,6 +50,55 @@
 
     <!-- Spinner overlay css -->
    <link href="../dist/css/spinner.css" rel="stylesheet" type="text/css">
+
+    <!--d3 styling  -->
+   <style>
+
+        .toolTip {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        position: absolute;
+        display: none;
+        width: auto;
+        height: auto;
+        background: none repeat scroll 0 0 white;
+        border: 0 none;
+        border-radius: 8px 8px 8px 8px;
+        box-shadow: -3px 3px 15px #888888;
+        color: black;
+        font: 12px sans-serif;
+        padding: 5px;
+        text-align: center;
+        }
+        .legend {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 60%;
+        }
+        
+        text {
+            font: 10px sans-serif;
+        }
+        .axis text {
+            font: 10px sans-serif;
+        }
+        .axis path{
+            fill: none;
+            stroke: #000;
+        }
+        .axis line {
+            fill: none;
+            stroke: #000;
+            shape-rendering: crispEdges;
+        }
+        .axis .tick line {
+            stroke-width: 1;
+            stroke: rgba(0, 0, 0, 0.2);
+        }
+        .x.axis path {
+            display: none;
+        }
+
+
+    </style>
 
 </head>
 
@@ -127,7 +174,7 @@
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
-	            <!-- /.row -->
+                <!-- /.row -->
             <div class="row">
                 <div class="panel panel-default">
 
@@ -178,7 +225,21 @@
                                 <div class="panel-body">
                                 
                                     <div class="loading" id="loadSpinner">Loading&#8230;</div>
-                                    <div id="morris-driver-bar-chart"></div>
+                                    <!-- <label><input type="checkbox" class="sorter"> Sort values</label> -->
+                                    <div class="dropdown">
+                                      <button class="btn btn-default dropdown-toggle" type="button"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                        Sort
+                                        <span class="caret"></span>
+                                      </button>
+                                      <ul class="dropdown-menu" id="sorter" aria-labelledby="sorter">
+                                        <li><a  id="name">By Vehicle Name</a></li>
+                                        <li><a  id="safety">By Safety Score</a></li>
+                                        <li><a  id="eco">By Eco Score</a></li>
+                                      </ul>
+                                    </div>
+                                   <div class="chart-panel">
+                                        <svg class="chart"></svg>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -205,15 +266,6 @@
     <!-- Custom Theme JavaScript -->
     <script src="../dist/js/sb-admin-2.js"></script>
 
-    <!-- Morris Charts JavaScript -->
-    <script src="../bower_components/raphael/raphael-min.js"></script>
-    <script src="../bower_components/morrisjs/morris.min.js"></script>
-
-    <!-- Chart.js -->
-    <script src="../bower_components/Chart.js/Chart.js"></script>
-    
- 
-
     <!-- Moment.js -->
     <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <!-- Include Date Range Picker -->
@@ -228,18 +280,6 @@
         var graph;
         $(document).ready(function(){
             $("#loadSpinner").hide();
-
-            //Add bar chart
-            graph = Morris.Bar({
-                element: 'morris-driver-bar-chart',
-                data: [],
-                xkey: 'x',
-                ykeys: ['y','y2'],
-                labels: ['Safety Score', 'Eco Score'],
-                hideHover: 'auto',
-                barColors: ["#ff8800","#02d914"],
-                resize: true
-            });
         });
     </script>
 
@@ -301,9 +341,9 @@
             vehicles = vehicles.data;
             
             var vehicleIDs = vehicles.map(function(vehicles) {
-    			return vehicles['id'];
-			});
-			
+                return vehicles['id'];
+            });
+            
 
             $.each(vehicles,function(key, value) 
             {
@@ -410,7 +450,10 @@
 
         function scores(vehicleInfo){
 
-            var data=[];
+            var labels = [];
+            var values_safety = [];
+            var values_eco = [];
+            var dataset = [];
             //for each vehicle
             $.each(vehicleInfo,function(key, value) {
                 var distRaw = value.dev_dist;
@@ -444,13 +487,268 @@
                 var eco = (100 - eco_item < 40) ? 40 : 100 - eco_item;
                 eco = Math.round(eco);
 
-                data.push({ x : allVehicles[key], y : safety, y2 : eco});  
+                console.log(key);
+                labels.push(allVehicles[key]);
+                values_safety.push(safety);
+                values_eco.push(eco);
+                dataset.push({id: key, label: allVehicles[key], Safety:safety, Eco:eco});
+               
             });
 
-            graph.setData(data);
+    
+
+
+            d3_bar(dataset);
+            
             $("#loadSpinner").hide();
         }
 
+    </script>
+
+    <script>
+    
+        
+
+        
+        /*d3.select(".sorter").on("change", d3_change);
+        var sortTimeout = setTimeout(function() {
+            d3.select(".sorter").property("checked", true).each(d3_change);
+        }, 2000);*/
+
+        $('.dropdown-menu li a').on('click', function () {
+             d3_change($(this).attr('id'));
+         });
+
+        //d3.select(".chart-panel").append("svg").attr("class","chart");
+        var barColors = ["#ff8800","#02d914"];
+        var dataset = null;
+        
+
+      
+
+
+        var margin;
+
+        var y0;
+
+        var y1;
+
+        var x;
+
+        var colorRange = d3.scale.category20();
+        var color = d3.scale.ordinal()
+                .range(colorRange.range());
+
+        var xAxis;
+
+        var yAxis;
+        //.tickFormat(d3.format(".2s"));
+
+        var divTooltip = d3.select(".chart-panel").append("div").attr("class", "toolTip");
+
+
+        var svg;
+
+        function d3_bar(data){
+            d3.select(".chart").remove();
+
+            margin = {top: 10, right: 50, bottom: 20, left: 200},
+            width = parseInt(d3.select('.chart-panel').style('width'), 10) - margin.left - margin.right,
+            h = 800;
+
+            y0 = d3.scale.ordinal()
+                .rangeRoundBands([h, 0], .2, .5);
+
+            y1 = d3.scale.ordinal();
+
+            x = d3.scale.linear()
+                .range([0, width- margin.right - 40]);
+
+            colorRange = d3.scale.category20();
+            color = d3.scale.ordinal()
+                .range(colorRange.range());
+
+            xAxis = d3.svg.axis()
+                .scale(x)
+                .tickSize(-h)
+                .orient("bottom");
+
+            yAxis = d3.svg.axis()
+                .scale(y0)
+                .orient("left");
+            
+            svg = d3.select(".chart-panel").append("svg").attr("class","chart")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", h + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            dataset = data;
+            var options = d3.keys(dataset[0]).filter(function(key) { return key !== "label" && key !="id"; });
+
+            dataset.forEach(function(d) {
+                d.valores = options.map(function(name) { return {name: name, value: +d[name]}; });
+            });
+
+            y0.domain(dataset.map(function(d) { return d.label; }));
+            y1.domain(options).rangeRoundBands([0, y0.rangeBand()]);
+            x.domain([0, d3.max(dataset, function(d) { return d3.max(d.valores, function(d) { return d.value; }); })]);
+
+
+            svg.append("g")
+                    .attr("class", "x axis")
+                    .attr("transform", "translate(0," + (h) + ")")
+                    .call(xAxis);
+
+            svg.append("g")
+                    .attr("class", "y axis")
+                    .call(yAxis);
+
+            //svg.selectAll(".y.axis .tick text")
+                    //.call(verticalWrap, y0.rangeBand());
+
+            var bar = svg.selectAll(".bar")
+                    .data(dataset)
+                    .enter().append("g")
+                    .attr("class", "rect")
+                    .attr("transform", function(d) { return "translate( 0,"+ y0(d.label) +")"; });
+
+            var bar_enter = bar.selectAll("rect")
+                    .data(function(d) { return d.valores; })
+                    .enter()
+
+
+            bar_enter.append("rect")
+                    .attr("height", y1.rangeBand())
+                    .attr("y", function(d) { return y1(d.name); })
+                    .attr("x", function(d) { return 0; })
+                    .attr("value", function(d){return d.name;})
+                    .attr("width", function(d) { return x(d.value); })
+                    .style("fill", function(d) { return d.name==="Safety"?barColors[0]:barColors[1]; });
+
+            bar_enter.append("text")
+                    .attr("x", function(d) { return x(d.value) +5;  })
+                    .attr("y", function(d) { return y1(d.name) +(y1.rangeBand()/2); })
+                    .attr("dy", ".35em")
+                    .text(function(d) { return d.value; });
+
+            bar
+                    .on("mousemove", function(d){
+                        divTooltip.style("left", d3.event.layerX+20+"px");
+                        divTooltip.style("top", d3.event.layerY+20+"px");
+                        divTooltip.style("display", "inline-block");
+                        var x = d3.event.pageX, y = d3.event.pageY
+                        var elements = document.querySelectorAll(':hover');
+                        l = elements.length
+                        l = l-1
+                        elementData = elements[l].__data__
+                        divTooltip.html((d.label)+"<br>"+elementData.name+"<br>"+elementData.value+"%");                        
+                    });
+
+            bar
+                    .on("mouseout", function(d){
+                        divTooltip.style("display", "none");
+                    });
+
+            bar
+                    .on("click", function(d){
+                        var drp = $('#datePicker').data('daterangepicker');
+                        var from = drp.startDate.format('YYYY-MM-DD');
+                        var to = drp.endDate.format('YYYY-MM-DD');
+                        console.log(d.id + " - " + d.label);
+                        console.log(from + " " + to);
+                        window.open("drivers.html?id="+d.id+'&from='+from+"&to="+to);
+                    });
+
+            var legend = svg.selectAll(".legend")
+                    .data(options.slice())
+                    .enter().append("g")
+                    .attr("class", "legend")
+                    .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+            legend.append("rect")
+                    .attr("x", parseInt(d3.select('.chart-panel').style('width'), 10) - margin.left - margin.right)
+                    .attr("width", 30)
+                    .attr("height", 30)
+                    .style("fill", function(d,i) { return barColors[i%2]; });
+
+            legend.append("text")
+                    .attr("x", parseInt(d3.select('.chart-panel').style('width'), 10) - margin.left - margin.right - 10)
+                    .attr("y", 9)
+                    .attr("dy", ".35em")
+                    .style("text-anchor", "end")
+                    .text(function(d) { return d; });
+
+            /*        
+            //Wrap y-axis labels
+            function verticalWrap(text, width) {
+                text.each(function() {
+                    var text = d3.select(this),
+                            words = text.text().split(/\s+/).reverse(),
+                            word,
+                            line = [],
+                            lineNumber = 0,
+                            lineHeight = 1.1, // ems
+                            y = text.attr("y"),
+                            x = text.attr("x"),
+                            dy = parseFloat(text.attr("dy")),
+                            tspan = text.text(null).append("tspan").attr("x", x).attr("y", y).attr("dy", dy + "em");
+                    while (word = words.pop()) {
+                        line.push(word);
+                        tspan.text(line.join(" "));
+                        if (tspan.node().getComputedTextLength() > width) {
+                            line.pop();
+                            tspan.text(line.join(" "));
+                            line = [word];
+                            tspan = text.append("tspan").attr("x", x).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
+                        }
+                    }
+                });
+            }*/
+        } //end d3_bar()
+
+        function d3_change(id) {
+                if(dataset){
+                    
+                   var y_new;
+                    switch (id) {                   
+                        case "name":
+                            y_new = y0.domain(dataset.sort( function(a, b) { return d3.ascending(b.label, a.label); })
+                                .map(function(d) { return d.label; }))
+                                .copy();
+                            break;
+                        case "safety":
+                            y_new = y0.domain(dataset.sort(function(a, b) { return a.Safety - b.Safety; })
+                                .map(function(d) { return d.label; }))
+                                .copy();
+                            break;
+                        case "eco":
+                            y_new = y0.domain(dataset.sort(function(a, b) { return a.Eco - b.Eco; })
+                                .map(function(d) { return d.label; }))
+                                .copy();
+                            break;
+                    }
+                    
+                    //Sort y labels    
+                    svg.selectAll(".bar")
+                        .sort(function(a, b) { return y_new(a.label) - y_new(b.label); });
+
+                    console.log(svg.selectAll(".bar"));
+                       
+                    var transition = svg.transition().duration(750),
+                        delay = function(d, i) { return i * 50; };
+
+                     transition.selectAll(".rect")
+                        .delay(delay)
+                        .attr("transform", function(d) { return "translate( 0,"+ y_new(d.label) +")"; });
+
+                    transition.select(".y.axis")
+                        .call(yAxis)
+                      .selectAll("g")
+                        .delay(delay);
+                }
+
+                    
+        } //end change
     </script>
  
 
