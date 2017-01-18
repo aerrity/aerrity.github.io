@@ -47,6 +47,8 @@
 		}
     </style>
 
+    <script src="https://unpkg.com/ityped@0.0.7"></script>
+
 </head>
 
 <body id="page-top" data-spy="scroll" data-target=".navbar-custom">
@@ -101,7 +103,9 @@
                     <div class="col-md-8 col-md-offset-2">
                         
                         <h1 class="brand-heading">Dr. Andrew Errity</h1>
-                        <p class="intro-text"><b>Lecturer in Computing</b><br>Institute of Art, Design &amp; Technology, Dun Laoghaire</p>
+                        <p class="intro-text">
+                            <span id="ityped" class="ityped"></span>
+                        </p>
                         <div class="page-scroll">
                             <a href="#about" class="btn btn-circle">
                                 <i class="fa fa-angle-double-down animated"></i>
@@ -289,6 +293,14 @@
 		    $this.text($this.text() == moreText ? lessText : moreText).prev("div.more").slideToggle("slow");
 		});
 	</script>
+
+    <script>
+      ityped.init('#ityped', {
+        strings:['Lecturer in Computing', 'Institute of Art, Design & Technology, Dun Laoghaire'],
+        startDelay: 200,
+        loop: true
+      });
+    </script>
 
     <!-- Google Analytics -->
     <script>
