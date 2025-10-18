@@ -1,310 +1,207 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Andrew Errity</title>
 
-    <title>Andrew Errity</title>
+  <!-- Poppins font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 
-    <!-- Bootstrap Core CSS -->
-    <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <!-- Font Awesome 6 (CDNJS) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" referrerpolicy="no-referrer" />
 
-    <!-- Fonts -->
-    <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
-    <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+  <!-- AE favicon -->
+  <link rel="icon" href="data:image/svg+xml,
+    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'>
+      <circle cx='50' cy='50' r='48' fill='%230073e6'/>
+      <text x='50' y='60' font-size='42' text-anchor='middle' fill='white' font-family='Arial, sans-serif'>AE</text>
+    </svg>">
 
-    <!-- Custom Theme CSS -->
-    <!--<link rel="stylesheet/less" type="text/css" href="less/grayscale.less">-->
-    <link href="css/grayscale.css" rel="stylesheet">
-    <link href="css/embed-responsive.css" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg-color: #fafafa;
+      --text-color: #222;
+      --link-color: #0073e6;         /* light mode link + ring base */
+      --muted-color: #333;
+      --avatar-bg: #ddd;
+      --divider: #e5e5e5;
+      --icon-border: #c8c8c8;
+      --ring-color: rgba(0,115,230,0.25);
+    }
 
-    <style>
-        #particles-js {
-          position: absolute;
-          width: 100%;
-          height: 100%;
-          background-color: #50000;
-          background-image: url("");
-          background-repeat: no-repeat;
-          background-size: cover;
-          background-position: 50% 50%;
-        }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-color: #111;
+        --text-color: #eee;
+        --link-color: #4da3ff;       /* dark mode link + ring base */
+        --muted-color: #ccc;
+        --avatar-bg: #444;
+        --divider: #2a2a2a;
+        --icon-border: #3a3a3a;
+        --ring-color: rgba(77,163,255,0.30);
+      }
+    }
 
-		div.more {
-		    display:none;
-		}
+    * { box-sizing: border-box; }
 
-		a.readmorebtn {
-		    cursor:pointer;
-		}
+    body {
+      font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      margin: 0;
+      transition: background-color 0.3s, color 0.3s;
+      padding: 6rem 1.5rem;
+    }
 
-		a.readmorebtn:hover {
-		    border-bottom:1px black solid;
-		}
-    </style>
+    main {
+      max-width: 700px;
+      width: 100%;
+      text-align: left;
+    }
 
+    /* Smooth underline animation for inline links (stable, no layout shift) */
+    a.text-link {
+      color: var(--link-color);
+      text-decoration: none;
+      background-image: linear-gradient(currentColor, currentColor);
+      background-size: 0% 1.5px;
+      background-repeat: no-repeat;
+      background-position: 0 100%;
+      transition: background-size 0.25s ease;
+    }
+    a.text-link:hover,
+    a.text-link:focus-visible {
+      background-size: 100% 1.5px;
+    }
+
+    .profile {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    img.avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background-color: var(--avatar-bg);
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    h1 {
+      font-size: 1.9rem;
+      font-weight: 600;
+      margin: 0;
+      letter-spacing: 0.02em;
+    }
+
+    p {
+      line-height: 1.65;
+      margin: 0 0 1.1rem 0;
+      color: var(--muted-color);
+      font-weight: 400;
+      letter-spacing: 0.01em;
+      text-align: left;
+    }
+
+    footer {
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--divider);
+      display: flex;
+      justify-content: flex-start;  /* now left-aligned */
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+
+
+    /* Footer icon buttons with reliable box-shadow “ring” animation */
+    .icon-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-color);
+      text-decoration: none;
+      border: 1px solid var(--icon-border);
+      box-shadow: 0 0 0 0 var(--ring-color); /* start with no ring */
+      transition:
+        box-shadow 220ms ease,
+        border-color 200ms ease,
+        color 200ms ease,
+        transform 200ms ease;
+      will-change: box-shadow, transform;
+    }
+    .icon-btn:hover,
+    .icon-btn:focus-visible {
+      color: var(--link-color);
+      border-color: var(--link-color);
+      transform: translateY(-2px);
+      box-shadow: 0 0 0 6px var(--ring-color); /* visible ring on hover/focus */
+    }
+
+    /* Motion sensitivity */
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; }
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px; height: 1px;
+      padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0,0,0,0);
+      white-space: nowrap; border: 0;
+    }
+  </style>
 </head>
+<body>
+  <main>
+    <div class="profile">
+      <img src="profile.jpg" alt="Andrew Errity" class="avatar">
+      <h1>Andrew Errity</h1>
+    </div>
 
-<body id="page-top" data-spy="scroll" data-target=".navbar-custom">
-    <!-- particles.js container -->
-    <div id="particles-js"></div>
+    <p>Andrew is the Head of the Department of Technology + Psychology at the
+      <a class="text-link" href="https://iadt.ie/" target="_blank" rel="noopener">Institute of Art, Design + Technology (IADT)</a>
+      and a member of the institute’s Senior Management Team.</p>
 
-    <nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
-        <div class="container">
-            <div class="navbar-header page-scroll">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse">
-                    <i class="fa fa-bars"></i>
-                </button>
-                <a class="navbar-brand" href="#page-top">
-                    <i class="fa fa-home"></i>  Home
-                </a>
-            </div>
+    <p>Working at the intersection of technology, media, and psychology, Andrew leads a vibrant and interdisciplinary academic department that delivers a diverse suite of programmes. These include undergraduate degrees in Creative Computing, Game Design, Creative Music Production, Immersive Media Production, and Applied Psychology, as well as postgraduate programmes in Cyberpsychology, User Experience Design, and Sound.</p>
 
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse navbar-right navbar-main-collapse">
-                <ul class="nav navbar-nav">
-                    <!-- Hidden li included to remove active class from about link when scrolled up past about section -->
-                    <li class="hidden">
-                        <a href="#page-top"></a>
-                    </li>
-                    <li class="page-scroll">
-                        <a href="#about">About</a>
-                    </li>
-                    <li class="page-scroll">
-                        <a href="#teaching">Teaching</a>
-                    </li>
-                    <li class="page-scroll">
-                        <a href="#research">Research</a>
-                    </li>
-                     <li class="page-scroll">
-                        <a href="#consultancy">Consultancy</a>
-                    </li>
-                    <li class="page-scroll">
-                        <a href="#contact">Contact</a>
-                    </li>
-                </ul>
-            </div>
-            <!-- /.navbar-collapse -->
-        </div>
-        <!-- /.container -->
-    </nav>
+    <p>Andrew’s research interests span signal processing, machine learning, and human–computer interaction, with a particular emphasis on spoken language technologies.</p>
 
-    <section class="intro">
+    <p>Beyond IADT, Andrew serves on the Management Committee of the Creative Futures Academy (CFA), a national partnership between the
+      <a class="text-link" href="https://www.ncad.ie/" target="_blank" rel="noopener">National College of Art and Design (NCAD)</a>,
+      <a class="text-link" href="https://www.ucd.ie/" target="_blank" rel="noopener">University College Dublin (UCD)</a>, and
+      <a class="text-link" href="https://iadt.ie/" target="_blank" rel="noopener">IADT</a>.
+      The CFA is dedicated to reimagining creative education and fostering innovation across the arts, media, and design sectors.</p>
 
-        <div class="intro-body">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-8 col-md-offset-2">
+    <p>In addition to academic leadership and research, Andrew actively collaborates with industry partners on projects in software development, user interface (UI) and user experience (UX) design, and data visualisation, supporting the translation of research insights into real-world applications.</p>
 
-                        <h1 class="brand-heading">Dr. Andrew Errity</h1>
-                        <p class="intro-text">
-                            Head of Department of Technology & Psychology <br/> Institute of Art, Design & Technology, Dun Laoghaire
-                        </p>
-                        <div class="page-scroll">
-                            <a href="#about" class="btn btn-circle">
-                                <i class="fa fa-angle-double-down animated"></i>
-                            </a>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="about" class="content-section-alt text-center">
-        <div class="about-section">
-        	<div class="container">
-		        <div class="col-lg-8 col-lg-offset-2">
-		            <h2>About Me</h2>
-		            <p><img class="img-circle" src="img/ae.jpg" width="250"></p>
-		            <p>I'm Head of Department of Technology & Psychology at the <a href="http://www.iadt.ie">Institute of Art, Design &amp; Technology (IADT)</a>, Dun Laoghaire. Prior to working in IADT I completed a BSc (Hons) in Computer Applications [Computer Science] in Dublin City University (DCU), followed by a PhD focusing on Speech Signal Processing, also in DCU.</p>
-		        </div>
-      		</div>
-        </div>
-    </section>
-
-    <section id="teaching" class="content-section text-center">
-        <div class="teaching-section">
-            <div class="container">
-                <div class="col-lg-8 col-lg-offset-2">
-                    <h2>Teaching</h2>
-                    <p>I'm currently teaching on the BSc (Hons) in Creative Computing and the PgDip/MSc in User Experience (UX) Design programmes at IADT. I teach and supervise students studying topics including programming, networks, databases, human-computer interaction, UX design, and data visualisation.</p>
-                    <p>Here are some examples of student projects I have supervised:</p>
-                    <div class="embed-container">
-                        <iframe width="560" height="315" src="//www.youtube.com/embed/videoseries?list=PLfQl51r_ma9N2MKuMtamWBBhflrM2TMZe" frameborder="0" allowfullscreen></iframe>
-                    </div>
-                    <br>
-                    <br>
-                    <p>And here's an introductory lecture on Data Visualisation I gave to students from the UCD Quinn School of Business in April 2014:</p>
-                    <div class="embed-container">
-                        <iframe src="http://www.slideshare.net/slideshow/embed_code/35313371" width="476" height="400" frameborder="0" marginwidth="0" marginheight="0" scrolling="no"></iframe>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="research" class="content-section-alt text-center">
-        <div class="research-section">
-            <div class="container">
-                <div class="col-lg-8 col-lg-offset-2" >
-                    <h2>Research</h2>
-                    <p>My research interests include signal processing, machine learning, and various aspects of human-computer interaction, particularly spoken language.</p>
-                    <section id="publications">
-                    <h3>Publications</h3>
-					<div style="border-bottom: 6px solid #ccc; margin:2.4em 0;">
-						<p>C.&nbsp;Lowry, T.&nbsp;McNichols, and A.&nbsp;Errity, "A framework for user acceptance of push messaging in mobile apps," in <em>Proc. of the 2nd World Congress on Electrical Engineering and Computer Systems and Science (EECSS'16)</em>, Budapest, Hungary, August 2016.
-						</p>
-	                    <p>A.&nbsp;Errity, "Human-Computer Interaction," in <em>An Introduction to Cyberpsychology</em>, I.&nbsp;Connolly, M.&nbsp;Palmer, H.&nbsp;Barton, and G.&nbsp;Kirwan, Eds., Routledge, 2016.
-	                    </p>
-	                    <br>
-	                    <p>
-	                    A.&nbsp;Errity, B.&nbsp;Rooney, and C.&nbsp;Tunney, "Gaming," in <em>An Introduction to Cyberpsychology</em>, I.&nbsp;Connolly, M.&nbsp;Palmer, H.&nbsp;Barton, and G.&nbsp;Kirwan, Eds., Routledge, 2016.
-	                    </p>
-	                    <br>
-	                    <p>A.&nbsp;Errity, "<a href="http://doras.dcu.ie/15142/">Exploring the dimensionality of speech using manifold learning and dimensionality reduction methods</a>," Ph.D. thesis, Dublin City University, 2010.</p>
-	                    <br>
-	                    <p>
-						A.&nbsp;Errity and J.&nbsp;McKenna, "A comparison of linear and nonlinear dimensionality reduction methods applied to synthetic speech," in <em>Proc. of  Interspeech 2009 - Eurospeech</em>, Brighton, UK, September 2009, pp. 1095-1098.</p>
-						<br>
-
-						<div class="more">
-							<p>A.&nbsp;Errity, J.&nbsp;McKenna, and B.&nbsp;Kirkpatrick, "Manifold learning-based feature transformation for phone classification," in <em>Advances in Nonlinear Speech Processing, International Conference on Non-Linear Speech Processing, NOLISP 2007, Paris, France, May 22-25, 2007, Revised Selected Papers</em>, ser. Lecture Notes in Computer Science, M.&nbsp;Chetouani, A.&nbsp;Hussain, B.&nbsp;Gas, M.&nbsp;Milgram, and J.-L. Zarader, Eds., vol. 4885.  Springer, 2007, pp. 132-141.</p>
-							<br>
-							<p>A.&nbsp;Errity, J.&nbsp;McKenna, and B.&nbsp;Kirkpatrick, "Dimensionality reduction methods applied to both magnitude and phase derived features," in <em>Proc. of Interspeech 2007 - Eurospeech</em>, Antwerp, Belgium, August 2007, pp. 1957-1960.</p>
-							<br>
-							<p>B.&nbsp;Kirkpatrick, D.&nbsp;O'Brien, R.&nbsp;Scaife, and A.&nbsp;Errity, "On the role of spectral dynamics in unit selection speech synthesis," in <em>Proc. of Interspeech 2007 - Eurospeech</em>, Antwerp, Belgium, August 2007, pp. 2889-2892.</p>
-							<br>
-							<p>A.&nbsp;Errity and J.&nbsp;McKenna, "A comparative study of linear and nonlinear dimensionality reduction for speaker identification," in <em>Proc. of the 15th Int. Conf. on Digital Signal Processing (DSP)</em>, Cardiff, Wales, July 2007, pp. 587-590.</p>
-							<br>
-							<p>B.&nbsp;Kirkpatrick, D.&nbsp;O'Brien, R.&nbsp;Scaife, and A.&nbsp;Errity, "Spectral dynamics as a source of discontinuity in concatenative speech synthesis," in <em>Proc. of the 15th Int. Conf. on Digital Signal Processing (DSP)</em>, Cardiff, Wales, July 2007, pp. 615-618.</p>
-							<br>
-							<p>A.&nbsp;Errity, J.&nbsp;McKenna, and B.&nbsp;Kirkpatrick, "Manifold learning-based feature transformation for phone classification," in <em>Proc. of the ISCA Tutorial and Research Workshop on Nonlinear Speech Processing (NOLISP)</em>, Paris, France, May 2007, pp. 43-46.</p>
-							<br>
-							<p>A.&nbsp;Errity and J.&nbsp;McKenna, "An investigation of manifold learning for speech analysis," in <em>Proc. of the Int. Conf. on Spoken Language Processing (Interspeech 2006 - ICSLP)</em>, Pittsburgh PA, USA, September 2006, pp. 2506-2509.</p>
-							<br>
-							<p>A.&nbsp;Errity, J.&nbsp;McKenna, and S.&nbsp;Isard, "Unscented Kalman filtering of line spectral frequencies," in <em>Proc. of the Int. Conf. on Spoken Language Processing (Interspeech 2004 - ICSLP)</em>, Jeju, Korea, October 2004, pp. 2697-2700.</p>
-							<br>
-						</div>
-						<a class="readmorebtn">See more</a>
-					</div>
-                    </section>
-                    <section id="prisoner">
-                    <h3>Prisoner's Dilemma</h3>
-                    <p>
-                        As a final year undergraduate project I developed a piece of software entitled "Evolving Strategies for the Prisoner's Dilemma" which utilises Genetic Algorithms to evolve solutions to a classic problem of Game Theory. The software creates a virtual world whose inhabitants are all engaged in games of the <a href="http://en.wikipedia.org/wiki/Prisoner's_dilemma">Prisoner's Dilemma</a>. The players are permitted to reproduce based on their performance in the game. This can lead to distinct species/tribes of players which fight for dominance of the world.
-                        <br>
-                        <br>
-                        <img src="img/prisoner.gif" class="img-responsive" style="margin-left: auto; margin-right: auto;" alt="Prisoner's dilemma program">
-                    </p>
-
-                    <p>Further details regarding this project may be found below:
-                        <br><a href="https://github.com/aerrity/prisoners-dilemma"><span class="fa fa-github"></span> Source Code</a>
-                        <br><a href="./prisoner/epd.jar"><span class="glyphicon glyphicon glyphicon-download"></span> JAR file</a>
-                        <br> <a href="./prisoner/epd_technical.pdf"><span class="glyphicon glyphicon glyphicon-download"></span> Technical Manual</a>
-                        <br> <a href="./prisoner/epd.pdf"><span class="glyphicon glyphicon glyphicon-download"></span> Presentation</a>
-                    </p>
-                    </section>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="consultancy" class="content-section text-center">
-  		<div class="consultancy-section">
-  			<div class="container">
-	            <div class="col-lg-8 col-lg-offset-2">
-	                <h2>Consultancy</h2>
-	                <p>I've worked with a number of industry partners on projects including software development, user interface (UI)/user experience (UX) consultancy, and data visualisation. Many of these projects were facilitated by the Enterprise Ireland <a href="http://www.enterprise-ireland.com/InnovationVouchers">Innovation Vouchers</a> scheme. Please get in touch if you think we could work together on a project.</p>
-	                <div class="col-lg-4">
-						<span class="fa fa-mobile fa-5x" style="color:#fff;"></span>
-						<h4>Software development</h4>
-						<p>Design and development of mobile apps and web sites.</p>
-					</div>
-					<div class="col-lg-4">
-						<span class="fa fa-users fa-5x" style="color:#fff;"></span>
-						<h4>UI/UX Consultancy</h4>
-						<p>Applying user-centred design techniques to provide great user experiences.</p>
-					</div>
-					<div class="col-lg-4">
-						<span class="fa fa-bar-chart-o fa-5x" style="color:#fff;"></span>
-						<h4>Data Visualisation</h4>
-						<p>Producing effective graphical representations of data sets. See an example <a href="/d3-project/">Irish cartogram.</a></p>
-					</div>
-	            </div>
-	        </div>
-        </div>
-    </section>
-
-    <section id="contact" class="content-section-alt text-center">
-  		<div class="contact-section">
-  			<div class="container">
-	            <div class="col-lg-8 col-lg-offset-2">
-	                <h2>Contact Me</h2>
-	                <ul class="list-inline banner-social-buttons">
-	                    <li><a href="https://twitter.com/aerrity" rel="me" class="btn btn-default btn-lg"><i class="fa fa-twitter fa-fw"></i> <span class="network-name">Twitter</span></a>
-	                    </li>
-	                    <li><a href="https://github.com/aerrity" rel="me" class="btn btn-default btn-lg"><i class="fa fa-github fa-fw"></i> <span class="network-name">Github</span></a>
-	                    </li>
-	                    <li><a href="http://ie.linkedin.com/in/aerrity" rel="me" class="btn btn-default btn-lg"><i class="fa fa-linkedin fa-fw"></i> <span class="network-name">LinkedIn</span></a>
-	                    </li>
-	                    <li><a href="skype:aerrity?chat" class="btn btn-default btn-lg"><i class="fa fa-skype fa-fw"></i> <span class="network-name">Skype</span></a>
-	                    </li>
-	                </ul>
-	            </div>
-	        </div>
-        </div>
-    </section>
-
-    <div id="footerwrap">
-			<div class="footer container text-center">
-				<p style="font-size:12px; margin: 0 0 0 0px;">Based on the <a href="http://startbootstrap.com/grayscale">Grayscale </a>Bootstrap template.</p>
-			</div>
-	</div>
-
-    <!-- Core JavaScript Files -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
-    <!-- <script src="js/less-1.7.0.min.js" type="text/javascript"></script>-->
-
-    <!-- Custom Theme JavaScript -->
-    <script src="js/grayscale.js"></script>
-
-    <!-- Particle.js from http://vincentgarreau.com/particles.js/ -->
-    <script src="js/particles.min.js"></script>
-    <!-- Particle.js config -->
-    <script src="js/particles-app.js"></script>
-
-    <script>
-	    var moreText = "See more",
-	    lessText = "See less",
-	    moreButton = $("a.readmorebtn");
-
-		moreButton.click(function () {
-		    var $this = $(this);
-		    $this.text($this.text() == moreText ? lessText : moreText).prev("div.more").slideToggle("slow");
-		});
-	</script>
-
-
-    <!-- Google Analytics -->
-    <script>
-	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-	  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-	  ga('create', 'UA-51521228-1', 'andrewerrity.com');
-	  ga('send', 'pageview');
-
-	</script>
-
+    <footer>
+      <a class="icon-btn" href="https://research.iadt.ie/en/persons/andrew-errity" target="_blank" rel="noopener" aria-label="Research" title="Research">
+        <i class="fa-solid fa-flask" aria-hidden="true"></i><span class="sr-only">Research</span>
+      </a>
+      <a class="icon-btn" href="http://ie.linkedin.com/in/aerrity" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn">
+        <i class="fa-brands fa-linkedin" aria-hidden="true"></i><span class="sr-only">LinkedIn</span>
+      </a>
+      <a class="icon-btn" href="https://github.com/aerrity" target="_blank" rel="noopener" aria-label="GitHub" title="GitHub">
+        <i class="fa-brands fa-github" aria-hidden="true"></i><span class="sr-only">GitHub</span>
+      </a>
+      <a class="icon-btn" href="https://twitter.com/aerrity" target="_blank" rel="noopener" aria-label="Twitter/X" title="Twitter/X">
+        <i class="fa-brands fa-x-twitter" aria-hidden="true"></i><span class="sr-only">Twitter/X</span>
+      </a>
+    </footer>
+  </main>
 </body>
-
 </html>
